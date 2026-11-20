@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c0b12">
+<title>Demon Slayer | Talk to a Character</title>
+<style>
+  :root { --bg:#0c0b12; --card:#16141f; --line:#2b2740; --ink:#EDE9F5; --dim:#9A94AD; --red:#D12B45; --red2:#8E1429; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; background:var(--bg); color:var(--ink); }
+  body { font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; min-height:100vh; }
+  main { max-width:640px; margin:0 auto; padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 24px); }
+  .brand { letter-spacing:.25em; font-size:13px; color:var(--red); font-weight:700; }
+  h1 { font-family:Georgia,"Times New Roman",serif; font-size:28px; margin:6px 0 4px; }
+  .sub { color:var(--dim); margin:0 0 16px; }
+  button { font:inherit; cursor:pointer; }
+  .top { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .ghost { background:transparent; color:var(--dim); border:1px solid var(--line); border-radius:10px; padding:8px 12px; }
+  input[type=search], #txt, .modal input, .modal select { width:100%; font:inherit; padding:13px 14px; border-radius:12px; border:1px solid var(--line); background:var(--card); color:var(--ink); }
+  #grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+  .cc { text-align:left; background:var(--card); border:1px solid var(--line); border-left:4px solid var(--red); border-radius:12px; padding:12px; color:var(--ink); min-height:76px; }
+  .cc b { display:block; font-family:Georgia,serif; font-size:17px; }
+  .cc span { color:var(--dim); font-size:13px; }
+  .cc:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline:3px solid var(--red); outline-offset:2px; }
+  #chat { display:none; }
+  .prof { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; margin:10px 0 12px; }
+  .prof h2 { font-family:Georgia,serif; margin:0; font-size:24px; }
+  .role { color:var(--red); font-size:14px; letter-spacing:.08em; text-transform:uppercase; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 6px; }
+  .chip { border:1px solid var(--line); border-radius:999px; padding:3px 10px; font-size:14px; color:var(--ink); }
+  .about { color:var(--dim); font-size:15px; margin:6px 0 0; }
+  #log { display:flex; flex-direction:column; gap:10px; margin-bottom:12px; }
+  .m { padding:11px 14px; border-radius:14px; max-width:88%; white-space:pre-wrap; }
+  .u { align-self:flex-end; background:var(--red2); }
+  .b { align-self:flex-start; background:var(--card); border:1px solid var(--line); }
+  .b small { display:block; color:var(--red); font-size:12px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:2px; }
+  #bar { position:sticky; bottom:calc(env(safe-area-inset-bottom,0px) + 8px); display:flex; gap:8px; padding-top:8px; background:linear-gradient(transparent, var(--bg) 30%); }
+  .sq { width:52px; flex:none; border-radius:12px; border:1px solid var(--line); background:var(--card); color:var(--ink); }
+  .sq.on { border-color:var(--red); background:var(--red2); }
+  #send { background:var(--red); color:#fff; border:0; border-radius:12px; padding:0 18px; font-weight:700; }
+  .foot { color:var(--dim); font-size:13px; margin-top:22px; }
+  .modal { position:fixed; inset:0; background:rgba(5,4,10,.92); display:none; padding:calc(env(safe-area-inset-top,0px) + 24px) 18px; overflow:auto; z-index:9; }
+  .modal .box { max-width:460px; margin:0 auto; }
+  .modal label { display:block; font-weight:600; margin:14px 0 6px; }
+  .modal .go { width:100%; margin-top:18px; background:var(--red); color:#fff; border:0; border-radius:12px; padding:15px; font-weight:700; min-height:54px; }
+  .note { color:var(--dim); font-size:14px; }
+</style>
+</head>
+<body>
+<main>
+  <section id="list">
+    <div class="top"><div class="brand">⚔ DEMON ARCHIVES</div><button class="ghost" id="gear">Settings</button></div>
+    <h1>Talk to a character</h1>
+    <p class="sub">Pick a character and chat with an AI version of them.</p>
+    <input type="search" id="q" placeholder="Search characters…" aria-label="Search characters">
+    <div id="grid"></div>
+    <p class="foot">Fan-made. Not affiliated with the creators of Demon Slayer. Characters are AI role-play based on short original summaries, so they can be wrong. Light on spoilers.</p>
+  </section>
+
+  <section id="chat">
+    <div class="top"><button class="ghost" id="back">← All characters</button><button class="ghost" id="gear2">Settings</button></div>
+    <div class="prof">
+      <div class="role" id="prole"></div>
+      <h2 id="pname"></h2>
+      <div class="chips" id="pchips"></div>
+      <p class="about" id="pabout"></p>
+    </div>
+    <div id="log" aria-live="polite"></div>
+    <div id="bar">
+      <button class="sq" id="mic" aria-label="Talk with your voice">🎤</button>
+      <input id="txt" placeholder="Say something…" autocomplete="off">
+      <button class="sq" id="spk" aria-label="Read replies aloud">🔈</button>
+      <button id="send">Send</button>
+    </div>
+  </section>
+</main>
+
+<div class="modal" id="modal">
+  <div class="box">
+    <h2>Settings</h2>
+    <p class="note">The key stays on this device only. It is sent only to the AI you choose.</p>
+    <label for="prov">AI brain</label>
+    <select id="prov"><option value="gemini">Gemini (free key)</option><option value="claude">Claude (paid key)</option></select>
+    <label for="key">API key</label>
+    <input id="key" type="password" autocomplete="off" placeholder="Paste your key here">
+    <button class="go" id="save">Save</button>
+    <button class="ghost" id="close" style="width:100%;margin-top:10px;min-height:48px">Close</button>
+  </div>
+</div>
+
+<script>
+const MODEL = "claude-sonnet-5-5";
+const GEMINI_MODEL = "gemini-flash-lite-latest";
+
+/* ADD MORE CHARACTERS HERE: copy one block, change the words. */
+const CHARS = [
+  { id:"akaza", name:"Akaza", role:"Upper Rank Three demon",
+    traits:["Blunt","Competitive","Martial artist","Respects strength"],
+    about:"A demon who lives for combat and tests every opponent. He admires real strength, looks down on weakness, and has a quieter side he rarely shows.",
+    voice:"Blunt, confident, short sentences. Challenges people, asks whether they are strong, praises skill, and gets irritated by excuses. Likes the idea of strong people growing stronger." },
+  { id:"tanjiro", name:"Tanjiro Kamado", role:"Demon Slayer",
+    traits:["Kind","Determined","Polite","Protective"],
+    about:"A gentle, hard-working boy who became a demon slayer to protect his sister. He treats even enemies with compassion.",
+    voice:"Earnest, polite and encouraging. Apologises sincerely, notices smells, and never gives up." },
+  { id:"nezuko", name:"Nezuko Kamado", role:"Demon (kept her humanity)",
+    traits:["Gentle","Protective","Fierce","Mostly silent"],
+    about:"Tanjiro’s younger sister. She is a demon who still protects people and rarely speaks.",
+    voice:"Almost no words. Mostly short sounds like 'Mmm!' and actions in asterisks, such as *nods firmly*." },
+  { id:"zenitsu", name:"Zenitsu Agatsuma", role:"Demon Slayer",
+    traits:["Cowardly","Dramatic","Loyal","Secretly brave"],
+    about:"A loud, easily frightened swordsman who becomes astonishing when he is asleep or truly protecting someone.",
+    voice:"Panicky, dramatic, wailing and comedic, but sincere about loyalty and friends." },
+  { id:"inosuke", name:"Inosuke Hashibira", role:"Demon Slayer",
+    traits:["Wild","Boastful","Competitive","Learning manners"],
+    about:"A boar-masked fighter raised in the mountains. Loud and fearless, and slowly learning about friends.",
+    voice:"Shouts, boasts, challenges everyone, gets names wrong, and is awkward about kindness." },
+  { id:"giyu", name:"Giyu Tomioka", role:"Water Hashira",
+    traits:["Stoic","Quiet","Awkward","Caring"],
+    about:"A calm swordsman who says very little and is often misunderstood, but cares deeply.",
+    voice:"Terse and deadpan. Very few words. Awkward, but sincere." },
+  { id:"shinobu", name:"Shinobu Kocho", role:"Insect Hashira",
+    traits:["Polite","Teasing","Sharp","Hides anger"],
+    about:"A smiling Hashira and skilled poison expert who keeps strong feelings behind a gentle manner.",
+    voice:"Sweet, polite and smiling, with a teasing sting underneath." },
+  { id:"rengoku", name:"Kyojuro Rengoku", role:"Flame Hashira",
+    traits:["Passionate","Upbeat","Dutiful","Loud"],
+    about:"A warm, powerful Hashira who believes the strong must protect the weak.",
+    voice:"Booming, cheerful and encouraging. Loves food. Talks about burning spirit and duty." },
+  { id:"tengen", name:"Tengen Uzui", role:"Sound Hashira",
+    traits:["Flashy","Boastful","Protective","Ex-shinobi"],
+    about:"A showy Hashira who loves his family and does everything on a grand scale.",
+    voice:"Grand, self-praising and theatrical, but looks after his people." },
+  { id:"muichiro", name:"Muichiro Tokito", role:"Mist Hashira",
+    traits:["Dreamy","Forgetful","Blunt","Gifted"],
+    about:"A young prodigy who is vague and distant, yet unexpectedly sharp.",
+    voice:"Calm, a bit vague and absent-minded, sometimes cuttingly honest." },
+  { id:"mitsuri", name:"Mitsuri Kanroji", role:"Love Hashira",
+    traits:["Warm","Emotional","Strong","Big appetite"],
+    about:"A cheerful Hashira with great strength and an even bigger heart.",
+    voice:"Sweet, gushing and excitable. Loves food and kind people." },
+  { id:"obanai", name:"Obanai Iguro", role:"Serpent Hashira",
+    traits:["Strict","Suspicious","Sharp-tongued","Loyal"],
+    about:"A guarded, strict Hashira who trusts few people and is very devoted to those he does.",
+    voice:"Cold, clipped and distrustful. Rarely compliments anyone." },
+  { id:"gyomei", name:"Gyomei Himejima", role:"Stone Hashira",
+    traits:["Gentle","Solemn","Prayerful","Powerful"],
+    about:"A tall, blind Hashira, the strongest swordsman, who is deeply compassionate.",
+    voice:"Calm, solemn and kind. Speaks slowly and gets moved easily." },
+  { id:"sanemi", name:"Sanemi Shinazugawa", role:"Wind Hashira",
+    traits:["Fierce","Abrasive","Short-tempered","Protective"],
+    about:"A rough, aggressive Hashira with a hidden devotion to family.",
+    voice:"Gruff and shouting, quick to snap, with fierce loyalty underneath. Keep it PG." },
+  { id:"muzan", name:"Muzan Kibutsuji", role:"The Demon King",
+    traits:["Arrogant","Cold","Paranoid","Perfectionist"],
+    about:"The origin of all demons. Cruel, proud and obsessed with surviving.",
+    voice:"Imperious and contemptuous. Treats everyone as beneath him. Keep it PG-13." },
+  { id:"kokushibo", name:"Kokushibo", role:"Upper Rank One demon",
+    traits:["Grave","Disciplined","Formal","Tormented"],
+    about:"The strongest of the Upper Ranks. Serious, disciplined and haunted.",
+    voice:"Formal, grave and sparing with words." },
+  { id:"doma", name:"Doma", role:"Upper Rank Two demon",
+    traits:["Cheerful","Hollow","Charming","Unsettling"],
+    about:"A smiling demon who talks warmly about compassion but feels very little.",
+    voice:"Sugary, friendly and chatty. Something is a little off underneath." }
+];
+
+const $ = id => document.getElementById(id);
+const store = { get(k){ try { return localStorage.getItem(k) || ""; } catch(e){ return ""; } }, set(k,v){ try { localStorage.setItem(k,v); } catch(e){} } };
+let cur = null, hist = {}, busy = false, speak = store.get("speak") === "1";
+
+function renderList(){
+  const f = $("q").value.trim().toLowerCase();
+  const g = $("grid"); g.textContent = "";
+  CHARS.filter(c => !f || (c.name + " " + c.role).toLowerCase().includes(f)).forEach(c => {
+    const b = document.createElement("button"); b.className = "cc";
+    b.innerHTML = "<b></b><span></span>"; b.firstChild.textContent = c.name; b.lastChild.textContent = c.role;
+    b.onclick = () => openChar(c.id); g.appendChild(b);
+  });
+}
+function addMsg(cls, text){
+  const d = document.createElement("div"); d.className = "m " + cls;
+  if (cls === "b") { const s = document.createElement("small"); s.textContent = cur.name; d.appendChild(s); }
+  const t = document.createElement("div"); t.textContent = text; d.appendChild(t);
+  $("log").appendChild(d); d.scrollIntoView({block:"end"}); return t;
+}
+function openChar(id){
+  cur = CHARS.find(c => c.id === id); if (!cur) return;
+  $("list").style.display = "none"; $("chat").style.display = "block";
+  $("prole").textContent = cur.role; $("pname").textContent = cur.name; $("pabout").textContent = cur.about;
+  $("pchips").textContent = ""; cur.traits.forEach(t => { const s = document.createElement("span"); s.className = "chip"; s.textContent = t; $("pchips").appendChild(s); });
+  $("log").textContent = "";
+  hist[id] = hist[id] || [];
+  if (!hist[id].length) { addMsg("b", "Go ahead. Say something."); } else { hist[id].forEach(m => addMsg(m.role === "user" ? "u" : "b", m.content)); }
+  try { history.replaceState(null, "", "?c=" + id); } catch(e){}
+  window.scrollTo(0,0);
+}
+function closeChar(){
+  speechSynthesis && speechSynthesis.cancel(); cur = null;
+  $("chat").style.display = "none"; $("list").style.display = "block";
+  try { history.replaceState(null, "", location.pathname); } catch(e){}
+}
+function sys(c){
+  return `You are role-playing ${c.name} (${c.role}) from the anime and manga Demon Slayer (Kimetsu no Yaiba), on a fan-made website. Personality: ${c.traits.join(", ")}. About: ${c.about} How they speak: ${c.voice} Rules: stay in character at all times. Reply in 1 to 4 short sentences. Do not quote official lines word for word. Avoid spoilers unless the person asks. Keep it PG-13 with no graphic gore. If asked whether you are an AI, say you are an AI role-play of the character made by a fan.`;
+}
+async function ai(c, msgs){
+  if (store.get("prov") === "claude") {
+    const r = await fetch("https://api.anthropic.com/v1/messages", { method:"POST",
+      headers:{ "content-type":"application/json", "x-api-key": store.get("key"), "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true" },
+      body: JSON.stringify({ model: MODEL, max_tokens: 400, system: sys(c), messages: msgs }) });
+    const d = await r.json(); if (!r.ok) throw new Error(d.error && d.error.message || "Request failed");
+    return d.content.map(x => x.text || "").join("").trim();
+  }
+  const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent", { method:"POST",
+    headers:{ "content-type":"application/json", "x-goog-api-key": store.get("key") },
+    body: JSON.stringify({ systemInstruction:{ parts:[{ text: sys(c) }] },
+      contents: msgs.map(m => ({ role: m.role === "assistant" ? "model" : "user", parts:[{ text: m.content }] })) }) });
+  const d = await r.json(); if (!r.ok) throw new Error(d.error && d.error.message || "Request failed");
+  return ((d.candidates[0].content.parts) || []).map(p => p.text || "").join("").trim();
+}
+async function send(text){
+  text = (text || "").trim(); if (!text || busy || !cur) return;
+  if (!store.get("key")) { openSettings(); return; }
+  busy = true; $("txt").value = ""; addMsg("u", text);
+  const h = hist[cur.id]; h.push({role:"user", content:text});
+  const out = addMsg("b", "…");
+  try {
+    const reply = await ai(cur, h.slice(-14));
+    h.push({role:"assistant", content:reply}); out.textContent = reply;
+    if (speak && "speechSynthesis" in window) { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(reply)); }
+  } catch(e) { h.pop(); out.textContent = "Something went wrong: " + e.message + ". Check your key in Settings."; }
+  busy = false;
+}
+function listen(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { alert("Please open this page in Chrome to use the microphone."); return; }
+  const rec = new SR(); rec.lang = "en-US";
+  rec.onstart = () => $("mic").classList.add("on"); rec.onend = () => $("mic").classList.remove("on");
+  rec.onresult = e => send(e.results[0][0].transcript); rec.start();
+}
+function openSettings(){ $("prov").value = store.get("prov") || "gemini"; $("key").value = ""; $("modal").style.display = "block"; }
+
+$("q").oninput = renderList;
+$("back").onclick = closeChar;
+$("gear").onclick = $("gear2").onclick = openSettings;
+$("close").onclick = () => $("modal").style.display = "none";
+$("save").onclick = () => { const k = $("key").value.trim(); store.set("prov", $("prov").value); if (k) store.set("key", k); $("modal").style.display = "none"; };
+$("send").onclick = () => send($("txt").value);
+$("txt").addEventListener("keydown", e => { if (e.key === "Enter") send($("txt").value); });
+$("mic").onclick = listen;
+$("spk").onclick = () => { speak = !speak; store.set("speak", speak ? "1" : "0"); $("spk").classList.toggle("on", speak); $("spk").textContent = speak ? "🔊" : "🔈"; if (!speak && window.speechSynthesis) speechSynthesis.cancel(); };
+$("spk").classList.toggle("on", speak); $("spk").textContent = speak ? "🔊" : "🔈";
+renderList();
+const want = new URLSearchParams(location.search).get("c"); if (want) openChar(want);
+</script>
+</body>
+</html>
